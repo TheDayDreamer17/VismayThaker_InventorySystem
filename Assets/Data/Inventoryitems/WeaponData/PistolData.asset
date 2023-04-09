@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fffb2783b39787f4fa22593721ef095a, type: 3}
   m_Name: PistolData
   m_EditorClassIdentifier: 
-  bulletCount: 0
+  bulletCount: 6
   BulletPrefab: {fileID: 0}

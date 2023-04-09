@@ -13,7 +13,8 @@ namespace Autovrse
         // Defining Movement Events For player
         public static Action<Vector2> OnMovementActionFired;
         public static Action OnJumpActionFired;
-        private InputAction _movement, _jump;
+        public static Action<Vector2> OnLookDirectionChangeActionFired;
+        private InputAction _movement, _jump, _look;
         public override void Awake()
         {
             base.Awake();
@@ -23,6 +24,7 @@ namespace Autovrse
                 _playerControls = new PlayerControls();
                 _movement = _playerControls.PlayerMovement.Movement;
                 _jump = _playerControls.PlayerMovement.Jump;
+                _look = _playerControls.PlayerMovement.Look;
             }
         }
         private void OnEnable()
@@ -34,6 +36,8 @@ namespace Autovrse
             _movement.Enable();
             _jump.performed += OnJumpPerformed;
             _jump.Enable();
+            _look.performed += OnLookDirectionChanged;
+            _look.Enable();
         }
 
         private void OnDisable()
@@ -45,6 +49,13 @@ namespace Autovrse
             _movement.Disable();
             _jump.performed -= OnJumpPerformed;
             _jump.Disable();
+            _look.performed += OnLookDirectionChanged;
+            _look.Disable();
+        }
+
+        private void OnLookDirectionChanged(InputAction.CallbackContext deltaChange)
+        {
+            OnLookDirectionChangeActionFired?.Invoke(deltaChange.ReadValue<Vector2>());
         }
 
         private void OnMovementPerformed(InputAction.CallbackContext moveData)

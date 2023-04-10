@@ -14,7 +14,7 @@ namespace Autovrse
         public static Action<Vector2> OnMovementActionFired;
         public static Action OnJumpActionFired;
         public static Action<Vector2> OnLookDirectionChangeActionFired;
-        private InputAction _movement, _jump, _look;
+        private InputAction _movement, _jump, _look, _throwWeapon, _backpackUIStateChanged, _fireWeapon;
         public override void Awake()
         {
             base.Awake();
@@ -25,6 +25,9 @@ namespace Autovrse
                 _movement = _playerControls.PlayerMovement.Movement;
                 _jump = _playerControls.PlayerMovement.Jump;
                 _look = _playerControls.PlayerMovement.Look;
+                _throwWeapon = _playerControls.PlayerMovement.Throw_Weapon;
+                _backpackUIStateChanged = _playerControls.UI.BackpackUI;
+                _fireWeapon = _playerControls.PlayerMovement.FireWeapon;
             }
         }
         private void OnEnable()
@@ -38,6 +41,12 @@ namespace Autovrse
             _jump.Enable();
             _look.performed += OnLookDirectionChanged;
             _look.Enable();
+            _throwWeapon.performed += OnWeaponThrowFired;
+            _throwWeapon.Enable();
+            _backpackUIStateChanged.performed += OnBackpackUIStateChanged;
+            _backpackUIStateChanged.Enable();
+            _fireWeapon.performed += OnWeaponFired;
+            _fireWeapon.Enable();
         }
 
         private void OnDisable()
@@ -49,8 +58,31 @@ namespace Autovrse
             _movement.Disable();
             _jump.performed -= OnJumpPerformed;
             _jump.Disable();
-            _look.performed += OnLookDirectionChanged;
+            _look.performed -= OnLookDirectionChanged;
             _look.Disable();
+            _throwWeapon.performed -= OnWeaponThrowFired;
+            _throwWeapon.Disable();
+            _backpackUIStateChanged.performed -= OnBackpackUIStateChanged;
+            _backpackUIStateChanged.Disable();
+            _fireWeapon.performed -= OnWeaponFired;
+            _fireWeapon.Disable();
+        }
+
+        private void OnWeaponFired(InputAction.CallbackContext obj)
+        {
+            GameEvents.NotifyOnWeaponFireTriggered();
+        }
+
+        private void OnBackpackUIStateChanged(InputAction.CallbackContext action)
+        {
+            Debug.Log("B pressed");
+            GameEvents.NotifyOnInventoryUIStateChanged();
+        }
+
+        private void OnWeaponThrowFired(InputAction.CallbackContext action)
+        {
+            Debug.Log("G pressed");
+            GameEvents.NotifyOnCurrentWeaponDropped();
         }
 
         private void OnLookDirectionChanged(InputAction.CallbackContext deltaChange)

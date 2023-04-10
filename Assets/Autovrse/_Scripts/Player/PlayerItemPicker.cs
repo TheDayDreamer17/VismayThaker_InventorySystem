@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,12 +11,28 @@ namespace Autovrse
         {
             _player = GetComponent<Player>();
         }
+        private void OnEnable()
+        {
+            GameEvents.OnItemDroppedFromInventoryUI += OnItemDroppedFromInventory;
+        }
+        private void OnDisable()
+        {
+            GameEvents.OnItemDroppedFromInventoryUI -= OnItemDroppedFromInventory;
+        }
+
+        private void OnItemDroppedFromInventory(IInventoryItem inventoryItem)
+        {
+            GameEvents.NotifyOnRequestForItemRemovalFromInventory(_player, inventoryItem);
+        }
+
         private void OnCollisionEnter(Collision other)
         {
-            IInventoryItem inventoryItem = other.collider.GetComponent<IInventoryItem>();
+
+            // Check if parent has IInventoryItem
+            IInventoryItem inventoryItem = other.collider.GetComponentInParent<IInventoryItem>();
             if (inventoryItem != null)
             {
-                InventorySystem.AddItemToInventory(_player, inventoryItem);
+                GameEvents.NotifyOnRequestForAddingItemFromInventory(_player, inventoryItem);
             }
         }
     }

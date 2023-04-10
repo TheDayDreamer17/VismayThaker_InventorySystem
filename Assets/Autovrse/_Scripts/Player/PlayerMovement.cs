@@ -19,6 +19,7 @@ namespace Autovrse
         [SerializeField] private float _jumpDistanceValue = 0.2f;
         [SerializeField] private float _playerHeight = 2;
         private bool _isInAir = false;
+        private bool _isUsingUI = false;
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
@@ -26,6 +27,8 @@ namespace Autovrse
         }
         private void Update()
         {
+            if (_isUsingUI)
+                return;
             _isInAir = !Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + _jumpDistanceValue, _ground);
             Debug.DrawRay(transform.position, Vector3.down * (_playerHeight * 0.5f + _jumpDistanceValue), Color.green);
             if (!_isInAir)
@@ -38,19 +41,33 @@ namespace Autovrse
             ControlSpeed();
         }
 
+        public void ModifyJumpParameter(float jumpValue, float duration)
+        {
 
+            _upwardForce *= jumpValue;
+            // give effect till duration seconds
+            this.DoActionWithDelay(() => { _upwardForce /= jumpValue; }, duration);
+
+        }
 
         private void OnEnable()
         {
             // Subscribe to input managet events
             PlayerInputManager.OnMovementActionFired += OnMovementActionFired;
             PlayerInputManager.OnJumpActionFired += OnJumpActionFired;
+            GameEvents.OnInventoryUIStateChanged += OnInventoryUIStateChanged;
         }
         private void OnDisable()
         {
             // UnSubscribe to input managet events
             PlayerInputManager.OnMovementActionFired -= OnMovementActionFired;
             PlayerInputManager.OnJumpActionFired -= OnJumpActionFired;
+            GameEvents.OnInventoryUIStateChanged -= OnInventoryUIStateChanged;
+        }
+
+        private void OnInventoryUIStateChanged()
+        {
+            _isUsingUI = !_isUsingUI;
         }
 
         private void FixedUpdate()
@@ -65,7 +82,7 @@ namespace Autovrse
             if (!_isInAir)
                 _rb.AddForce(_moveDirection.normalized * _movementSpeed, ForceMode.Force);
             else
-                _rb.AddForce(_moveDirection * _movementSpeed * _airMultiplier, ForceMode.Force);
+                _rb.AddForce(_moveDirection.normalized * _movementSpeed * _airMultiplier, ForceMode.Force);
         }
 
         private void OnMovementActionFired(Vector2 movementData)

@@ -28,8 +28,7 @@ namespace Autovrse
             RectTransform imageRect = transform.parent as RectTransform;
             if (!RectTransformUtility.RectangleContainsScreenPoint(imageRect, Input.mousePosition))
             {
-                Debug.Log("Drop");
-                InventorySystem.RemoveItemFromInventory(inventorySlotUI.cachedInventoryItemData.inventoryItem);
+                GameEvents.NotifyOnItemDroppedFromInventoryUI(inventorySlotUI.CachedInventoryItemData.InventoryItem);
             }
         }
     }

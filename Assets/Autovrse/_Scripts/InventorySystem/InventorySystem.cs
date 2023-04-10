@@ -1,76 +1,55 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 namespace Autovrse
 {
-    public class InventorySystem : Singleton<InventorySystem>
+    public class InventorySystem : MonoBehaviour
     {
-        [SerializeField] private int _backPackSize = 10;
-        [SerializeField] private static int BackPackSize => Instance._backPackSize;
-        private static List<InventoryItemData> _inventoryItems;
-        public static Action<InventoryItemData> OnItemAddedToInventorySystem;
-        public static Action<InventoryItemData> OnItemRemovedFromInventorySystem;
-        public static Action<InventoryItemData> OnItemCountModifiedInInventorySystem;
-
-        public override void Awake()
+        // Reference to the inventory data scriptable object
+        [SerializeField] private InventoryData _inventory;
+        private void Awake()
         {
-            base.Awake();
-            _inventoryItems = new List<InventoryItemData>();
+            _inventory.InventoryItems.Clear();
+        }
+        private void OnEnable()
+        {
+            // Subscribing events made by player
+            GameEvents.OnRequestForAddingItemFromInventory += AddItemToInventory;
+            GameEvents.OnRequestForItemRemovalFromInventory += RemoveItemFromInventory;
+        }
+        private void OnDisable()
+        {
+            // UnSubscribing events made by player
+            GameEvents.OnRequestForAddingItemFromInventory -= AddItemToInventory;
+            GameEvents.OnRequestForItemRemovalFromInventory -= RemoveItemFromInventory;
         }
 
-        public static void AddItemToInventory(Player player, IInventoryItem inventoryItem)
-        {
-            if (_inventoryItems.Count >= BackPackSize)
-            {
 
-            }
-            InventoryItemData inventoryItemData;
-            if (!_inventoryItems.Exists(inventoryItemData => inventoryItemData.inventoryItem.ItemData.ID == inventoryItem.ItemData.ID))
+        public void AddItemToInventory(Player player, IInventoryItem inventoryItem)
+        {
+            if (_inventory == null)
             {
-                inventoryItemData = new InventoryItemData(inventoryItem);
-                _inventoryItems.Add(inventoryItemData);
-                OnItemAddedToInventorySystem?.Invoke(inventoryItemData);
+                Debug.Log("Assign inventory Data, inventory Data is null");
+                return;
             }
-            else
+            if (_inventory.IsFull)
             {
-                if (inventoryItem.ItemData.CanBeStackable)
-                {
-                    int index = _inventoryItems.FindIndex(inventoryItemData => inventoryItemData.inventoryItem == inventoryItem);
-                    int currentCount = _inventoryItems[index].count;
-                    inventoryItemData = new InventoryItemData(inventoryItem, ++currentCount);
-                    _inventoryItems[index] = new InventoryItemData(inventoryItem, ++currentCount);
-                    OnItemCountModifiedInInventorySystem?.Invoke(inventoryItemData);
-                }
+                Debug.Log("bag is full");
+                return;
             }
-            inventoryItem.OnPickItem(player);
+            _inventory.AddToInventory(inventoryItem, () => inventoryItem.OnPickItem(player));
+
         }
 
-        public static void RemoveItemFromInventory(IInventoryItem inventoryItem)
+        public void RemoveItemFromInventory(Player player, IInventoryItem inventoryItem)
         {
-            InventoryItemData inventoryItemData;
-            if (_inventoryItems.Exists(inventoryItemData => inventoryItemData.inventoryItem.ItemData.ID == inventoryItem.ItemData.ID))
+            if (_inventory == null)
             {
-
-                inventoryItemData = _inventoryItems.Find(inventoryItemData => inventoryItemData.inventoryItem == inventoryItem);
-                _inventoryItems.Remove(inventoryItemData);
-                OnItemRemovedFromInventorySystem?.Invoke(inventoryItemData);
-
+                Debug.Log("Inventory Data is null");
+                return;
             }
-        }
 
-    }
+            _inventory.RemoveFromInventory(inventoryItem, () => inventoryItem.OnDropItem(player));
 
-    // InventoryItemData containes quantity of inventroy item
-    public struct InventoryItemData
-    {
-        public IInventoryItem inventoryItem;
-        public int count;
 
-        public InventoryItemData(IInventoryItem inventoryItem, int count = 1)
-        {
-            this.inventoryItem = inventoryItem;
-            this.count = count;
         }
 
     }

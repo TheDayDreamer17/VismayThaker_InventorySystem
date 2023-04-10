@@ -381,8 +381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2599d57093a56c14f859acf978b6276e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemImageArea: {fileID: 5475482524751124161}
-  itemCount: {fileID: 3386934922360130809}
+  _itemImageArea: {fileID: 5475482524751124161}
+  _itemBGArea: {fileID: 4100744556617894999}
+  _itemBtn: {fileID: 1829348254}
+  _itemCount: {fileID: 3386934922360130809}
+  _highlightColor: {r: 0.35023597, g: 0.3160377, b: 1, a: 1}
 --- !u!114 &3888433997557275208
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Autovrse
         [SerializeField] private Transform _playerReference;
 
         float xRotationValue, yRotationValue;
-
+        private bool _isUsingUI = false;
         private void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
@@ -20,14 +21,26 @@ namespace Autovrse
         private void OnEnable()
         {
             PlayerInputManager.OnLookDirectionChangeActionFired += OnLookDirectionChangeActionFired;
+            GameEvents.OnInventoryUIStateChanged += OnInventoryUIStateChanged;
+
         }
         private void OnDisable()
         {
             PlayerInputManager.OnLookDirectionChangeActionFired -= OnLookDirectionChangeActionFired;
+            GameEvents.OnInventoryUIStateChanged -= OnInventoryUIStateChanged;
+        }
+
+        private void OnInventoryUIStateChanged()
+        {
+            Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = !Cursor.visible;
+            _isUsingUI = !_isUsingUI;
         }
 
         private void OnLookDirectionChangeActionFired(Vector2 deltaChange)
         {
+            if (_isUsingUI)
+                return;
             // Get Mouse axis input data
             float mouseXValue = deltaChange.x * Time.deltaTime * _sensiX;
             float mouseYValue = deltaChange.y * Time.deltaTime * _sensiY;

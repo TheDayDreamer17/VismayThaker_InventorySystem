@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fffb2783b39787f4fa22593721ef095a, type: 3}
+  m_Name: PistolData
+  m_EditorClassIdentifier: 
+  MagazineSize: 6
+  BulletPrefab: {fileID: 3447561424597023238, guid: 77ae85f7b28bec04f845db3a13d3da7a, type: 3}
+  DropFrontForce: 3
+  DropUpwardForce: 3
+  DropTorqueForce: 100
+  DamageAmount: 20
+  TimeBetweenShooting: 1
+  Spread: 0.1
+  Range: 10
+  ReloadTime: 1
+  TimeBetweenShots: 1
+  AllowButtonHold: 0

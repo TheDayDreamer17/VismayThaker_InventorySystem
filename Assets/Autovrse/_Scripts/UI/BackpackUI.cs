@@ -26,7 +26,7 @@ namespace Autovrse
             GameEvents.OnItemAddedToInventorySystem += OnItemAddedToInventorySystem;
             GameEvents.OnItemCountModifiedInInventorySystem += OnItemCountModifiedInInventorySystem;
             GameEvents.OnItemRemovedFromInventorySystem += OnItemRemovedFromInventorySystem;
-            GameEvents.OnInventoryUIStateChanged += OnInventoryUIStateChanged;
+            GameEvents.OnInventoryUIButtonPressed += OnInventoryUIStateChanged;
             _useButton.onClick.AddListener(UseItem);
         }
         private void OnDisable()
@@ -34,12 +34,13 @@ namespace Autovrse
             GameEvents.OnItemAddedToInventorySystem -= OnItemAddedToInventorySystem;
             GameEvents.OnItemCountModifiedInInventorySystem -= OnItemCountModifiedInInventorySystem;
             GameEvents.OnItemRemovedFromInventorySystem -= OnItemRemovedFromInventorySystem;
-            GameEvents.OnInventoryUIStateChanged -= OnInventoryUIStateChanged;
+            GameEvents.OnInventoryUIButtonPressed -= OnInventoryUIStateChanged;
             _useButton.onClick.RemoveListener(UseItem);
         }
 
         private void OnInventoryUIStateChanged()
         {
+            GameEvents.NotifyOnUIStateChanged();
             _canvas.enabled = !_canvas.enabled;
             if (!_canvas.enabled)
             {
@@ -49,7 +50,7 @@ namespace Autovrse
 
         private void OnItemRemovedFromInventorySystem(InventoryItemData inventoryItemData)
         {
-            Debug.Log(inventoryItemData.InventoryItem);
+
             InventorySlotUI inventorySlotUI = _inventorySlots.Find(InventorySlot => InventorySlot.Name == inventoryItemData.InventoryItem.ItemData.Name);
             if (inventorySlotUI != null)
             {
@@ -92,11 +93,10 @@ namespace Autovrse
         }
         private void UseItem()
         {
-
             GameEvents.NotifyOnItemConsumed(_currentHighlightedInventorySlotUI.CachedInventoryItemData.InventoryItem as IInventoryConsumableItem);
             GameEvents.NotifyOnItemDroppedFromInventoryUI(_currentHighlightedInventorySlotUI.CachedInventoryItemData.InventoryItem);
             _useButton.interactable = false;
-            GameEvents.NotifyOnInventoryUIStateChanged();
+            GameEvents.NotifyOnInventoryUIButtonPressed();
         }
 
         private void OnBackpackClosed()

@@ -13,11 +13,17 @@ namespace Autovrse
             OnItemDroppedFromInventoryUI?.Invoke(inventoryItem);
         }
 
-        // Event invoked by inventory UI when B pressed 
-        public static Action OnInventoryUIStateChanged;
-        public static void NotifyOnInventoryUIStateChanged()
+        // Event invoked when UI is turned on or off 
+        public static Action OnUIStateChanged;
+        public static void NotifyOnUIStateChanged()
         {
-            OnInventoryUIStateChanged?.Invoke();
+            OnUIStateChanged?.Invoke();
+        }
+
+        public static Action OnInventoryUIButtonPressed;
+        public static void NotifyOnInventoryUIButtonPressed()
+        {
+            OnInventoryUIButtonPressed?.Invoke();
         }
 
         // Event invoked when G pressed to drop weapon
@@ -83,12 +89,34 @@ namespace Autovrse
             OnWeaponFireTriggered?.Invoke();
         }
 
-        // Event for weapon bullet Request
-        public static Action OnWeaponBulletsRequested;
-        public static void NotifyOnWeaponBulletsRequested()
+        public static Action OnWeaponFireStopped;
+        public static void NotifyOnWeaponFireStopped()
         {
-            OnWeaponBulletsRequested?.Invoke();
+            OnWeaponFireStopped?.Invoke();
         }
+
+
+        //Event to spawn item where enemy destroyed
+        public static Action<Vector3> OnEnemyDie;
+        public static void NotifyOnEnemyDie(Vector3 positionOfDeath)
+        {
+            OnEnemyDie?.Invoke(positionOfDeath);
+        }
+
+        // Event to show Game over on player die
+        public static Action OnPlayerDie;
+        public static void NotifyOnPlayerDie()
+        {
+            OnPlayerDie?.Invoke();
+        }
+
+        // Event to restart Game
+        public static Action OnGameRestart;
+        public static void NotifyOnGameRestart()
+        {
+            OnGameRestart?.Invoke();
+        }
+
     }
 }
 // Game ideas

@@ -5,7 +5,7 @@ namespace Autovrse
 {
     public class PlayerStatsUI : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _healthText;
+        [SerializeField] private TextMeshProUGUI _healthValueText;
         private void OnEnable()
         {
             GameEvents.OnPlayerHealthChanged += OnPlayerHealthChanged;
@@ -17,7 +17,7 @@ namespace Autovrse
 
         private void OnPlayerHealthChanged(float newHealthValue)
         {
-            _healthText.text = newHealthValue.ToString();
+            _healthValueText.text = newHealthValue.ToString();
         }
     }
 }

@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Autovrse
 {
+    [RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(Player))]
     public class PlayerMovement : MonoBehaviour
     {
+        Player _player;
         Rigidbody _rb;
         [Header("Movement")]
         [SerializeField] private float _movementSpeed = 5;
@@ -19,15 +21,16 @@ namespace Autovrse
         [SerializeField] private float _jumpDistanceValue = 0.2f;
         [SerializeField] private float _playerHeight = 2;
         private bool _isInAir = false;
-        private bool _isUsingUI = false;
+
         private void Awake()
         {
+            _player = GetComponent<Player>();
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true;
         }
         private void Update()
         {
-            if (_isUsingUI)
+            if (_player.IsUsingUI)
                 return;
             _isInAir = !Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + _jumpDistanceValue, _ground);
             Debug.DrawRay(transform.position, Vector3.down * (_playerHeight * 0.5f + _jumpDistanceValue), Color.green);
@@ -55,19 +58,12 @@ namespace Autovrse
             // Subscribe to input managet events
             PlayerInputManager.OnMovementActionFired += OnMovementActionFired;
             PlayerInputManager.OnJumpActionFired += OnJumpActionFired;
-            GameEvents.OnInventoryUIStateChanged += OnInventoryUIStateChanged;
         }
         private void OnDisable()
         {
             // UnSubscribe to input managet events
             PlayerInputManager.OnMovementActionFired -= OnMovementActionFired;
             PlayerInputManager.OnJumpActionFired -= OnJumpActionFired;
-            GameEvents.OnInventoryUIStateChanged -= OnInventoryUIStateChanged;
-        }
-
-        private void OnInventoryUIStateChanged()
-        {
-            _isUsingUI = !_isUsingUI;
         }
 
         private void FixedUpdate()

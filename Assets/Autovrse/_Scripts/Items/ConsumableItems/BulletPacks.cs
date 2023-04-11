@@ -8,8 +8,11 @@ namespace Autovrse
         [SerializeField] private WeaponBulletPackData _weaponBulletPackData;
         public void OnUseItem(PlayerConsumableController playerConsumableController)
         {
-            playerConsumableController.Player.PlayerWeaponController.ReloadWeapon();
-            Destroy(this.gameObject);
+            if (playerConsumableController.Player.PlayerWeaponController.MatchWeapon(_weaponBulletPackData.WeaponData))
+            {
+                playerConsumableController.Player.PlayerWeaponController.ReloadWeapon();
+                Destroy(this.gameObject);
+            }
         }
     }
 }

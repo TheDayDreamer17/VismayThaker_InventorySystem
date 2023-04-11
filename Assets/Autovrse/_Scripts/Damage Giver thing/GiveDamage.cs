@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 namespace Autovrse
 {
+    // This gives damage to any I damagable object which touches it 
     public class GiveDamage : MonoBehaviour
     {
         [SerializeField] private float _damageAmount = 20;

@@ -4,6 +4,7 @@ namespace Autovrse
     public interface IWeaponItem
     {
         WeaponData WeaponData { get; }
-        void OnFire();
+        void OnFireStart();
+        void OnFireStop();
     }
 }

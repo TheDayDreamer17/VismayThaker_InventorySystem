@@ -10,6 +10,7 @@ namespace Autovrse
         [SerializeField] private Weapon _currentWeapon = null;
         [SerializeField] private Transform _weaponHolderParent;
         private Transform _mainCamTransform;
+        [SerializeField] private float xRotationOffset;
         private void Awake()
         {
             _player = GetComponent<Player>();
@@ -23,7 +24,7 @@ namespace Autovrse
         {
             if (_currentWeapon != null)
             {
-                _weaponHolderParent.transform.rotation = Quaternion.Euler(new Vector3(_mainCamTransform.eulerAngles.x, _weaponHolderParent.eulerAngles.y, _weaponHolderParent.eulerAngles.z));
+                _weaponHolderParent.transform.rotation = Quaternion.Euler(new Vector3(_mainCamTransform.eulerAngles.x + xRotationOffset, _weaponHolderParent.eulerAngles.y, _weaponHolderParent.eulerAngles.z));
             }
         }
         public void AttachWeapon(Weapon weapon)
@@ -50,8 +51,17 @@ namespace Autovrse
             GameEvents.OnCurrentWeaponDropped -= OnCurrentWeaponDropped;
         }
 
+        public void DisableCurrentWeapon()
+        {
+            _currentWeapon?.DisableWeapon();
+        }
+        public void EnableCurrentWeapon()
+        {
+            _currentWeapon?.EnableWeapon();
+        }
         public void ReloadWeapon()
         {
+
             _currentWeapon?.ReloadWeapon();
         }
 
@@ -61,5 +71,12 @@ namespace Autovrse
                 GameEvents.NotifyOnRequestForItemRemovalFromInventory(_player, _currentWeapon as IInventoryItem);
         }
 
+        internal bool MatchWeapon(WeaponData weaponData)
+        {
+            if (_currentWeapon == null)
+                return false;
+
+            return weaponData == _currentWeapon.WeaponData;
+        }
     }
 }

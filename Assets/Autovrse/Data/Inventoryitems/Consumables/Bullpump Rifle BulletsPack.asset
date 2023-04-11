@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0d6558cfc63fd542ba3800a3593d7e2, type: 3}
   m_Name: Bullpump Rifle BulletsPack
   m_EditorClassIdentifier: 
-  ID: 5
   Name: RifleBulletsPack
   Description: Gives 25 bullets
-  VisualImageInUI: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  VisualImageInUI: {fileID: 21300000, guid: 16f74d6b482228c458f8d41f14b2a51a, type: 3}
   CanBeStackable: 1

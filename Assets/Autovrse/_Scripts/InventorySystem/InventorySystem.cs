@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 namespace Autovrse
 {
@@ -21,7 +22,6 @@ namespace Autovrse
             GameEvents.OnRequestForAddingItemFromInventory -= AddItemToInventory;
             GameEvents.OnRequestForItemRemovalFromInventory -= RemoveItemFromInventory;
         }
-
 
         public void AddItemToInventory(Player player, IInventoryItem inventoryItem)
         {

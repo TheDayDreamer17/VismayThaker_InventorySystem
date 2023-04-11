@@ -17,9 +17,9 @@ namespace Autovrse
         public float DropTorqueForce = 20;
 
         public int DamageAmount = 20;
-        public float TimeBetweenShooting = 1, Spread = 0.1f, Range = 10, ReloadTime = 1, TimeBetweenShots = 1;
+        public float TimeBetweenShooting = 1, Range = 10, ReloadTime = 1;
 
         public bool AllowButtonHold;
-        int bulletsLeft, bulletsShot;
+
     }
 }

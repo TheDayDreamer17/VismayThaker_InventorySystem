@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 namespace Autovrse
 {
-    public class PlayerInputManager : Singleton<PlayerInputManager>
+    public class PlayerInputManager : MonoBehaviour
     {
         private PlayerControls _playerControls;
 
@@ -15,9 +15,8 @@ namespace Autovrse
         public static Action OnJumpActionFired;
         public static Action<Vector2> OnLookDirectionChangeActionFired;
         private InputAction _movement, _jump, _look, _throwWeapon, _backpackUIStateChanged, _fireWeapon;
-        public override void Awake()
+        public void Awake()
         {
-            base.Awake();
             // Create instance of playercontrols to get input
             if (_playerControls == null)
             {
@@ -37,16 +36,24 @@ namespace Autovrse
             // Enable player actions and bind events on action performed 
             _movement.performed += OnMovementPerformed;
             _movement.Enable();
+
             _jump.performed += OnJumpPerformed;
             _jump.Enable();
+
             _look.performed += OnLookDirectionChanged;
             _look.Enable();
+
             _throwWeapon.performed += OnWeaponThrowFired;
             _throwWeapon.Enable();
+
             _backpackUIStateChanged.performed += OnBackpackUIStateChanged;
             _backpackUIStateChanged.Enable();
+
+
             _fireWeapon.performed += OnWeaponFired;
+            _fireWeapon.canceled += OnWeaponFireStopped;
             _fireWeapon.Enable();
+
         }
 
         private void OnDisable()
@@ -56,27 +63,40 @@ namespace Autovrse
             // Disable player actions and unbind events on action performed
             _movement.performed -= OnMovementPerformed;
             _movement.Disable();
+
             _jump.performed -= OnJumpPerformed;
             _jump.Disable();
+
             _look.performed -= OnLookDirectionChanged;
             _look.Disable();
+
             _throwWeapon.performed -= OnWeaponThrowFired;
             _throwWeapon.Disable();
+
             _backpackUIStateChanged.performed -= OnBackpackUIStateChanged;
             _backpackUIStateChanged.Disable();
+
             _fireWeapon.performed -= OnWeaponFired;
+            _fireWeapon.canceled -= OnWeaponFireStopped;
             _fireWeapon.Disable();
+
+
         }
 
         private void OnWeaponFired(InputAction.CallbackContext obj)
         {
             GameEvents.NotifyOnWeaponFireTriggered();
         }
+        private void OnWeaponFireStopped(InputAction.CallbackContext obj)
+        {
+            Debug.Log("OnWeaponFireStopped");
+            GameEvents.NotifyOnWeaponFireStopped();
+        }
 
         private void OnBackpackUIStateChanged(InputAction.CallbackContext action)
         {
             Debug.Log("B pressed");
-            GameEvents.NotifyOnInventoryUIStateChanged();
+            GameEvents.NotifyOnInventoryUIButtonPressed();
         }
 
         private void OnWeaponThrowFired(InputAction.CallbackContext action)

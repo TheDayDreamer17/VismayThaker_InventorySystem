@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using TMPro;
 namespace Autovrse
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(AudioSource))]
     public class Weapon : MonoBehaviour, IUniqueInventoryItem, IWeaponItem
     {
         [SerializeField] private Transform _shootPoint;
@@ -15,38 +17,95 @@ namespace Autovrse
 
         private Rigidbody _rb;
         private Transform _originalParent;
-
+        private int _bulletsLeft, _bulletsShot;
+        Coroutine _weaponFireCoroutine = null;
+        RaycastHit _hit;
+        private bool _readyToShoot = true, _reloading = false, _canShoot = true;
+        [SerializeField] private TMP_Text _bulletCountText;
+        private AudioSource _audioSource;
         private void Awake()
         {
+            _audioSource = GetComponent<AudioSource>();
             _originalParent = transform.parent;
             _rb = GetComponent<Rigidbody>();
+            _bulletsLeft = _weaponData.MagazineSize;
         }
-        public void OnFire()
+        IEnumerator OnFireCoroutine()
         {
+            do
+            {
+                if (_bulletsLeft == 0)
+                {
+                    OnMagazineEmpty();
+                    yield break;
+                }
+                if (!_canShoot)
+                    yield break;
+                if (_readyToShoot && !_reloading)
+                    Shoot();
+                yield return new WaitForSeconds(_weaponData.TimeBetweenShooting);
+                _readyToShoot = true;
+            } while (_weaponData.AllowButtonHold);
+            _weaponFireCoroutine = null;
+            yield return null;
+        }
+        private void Shoot()
+        {
+            _readyToShoot = false;
+            _bulletsLeft--;
+            _bulletCountText.text = _bulletsLeft.ToString();
+            _audioSource.Play();
             GameObject bullet = Instantiate(_weaponData.BulletPrefab, _shootPoint.transform.position, _shootPoint.transform.rotation);
             Vector3 direction = _shootPoint.forward;
-            bullet.GetComponent<Rigidbody>().AddForce(direction * 30, ForceMode.Impulse);
+            bullet.GetComponent<Rigidbody>().AddForce(direction * 10 * _weaponData.Range, ForceMode.Impulse);
             Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+
+            if (Physics.Raycast(ray, out _hit))
             {
-                IDamagable damagable = hit.collider.GetComponent<IDamagable>();
+                IDamagable damagable = _hit.collider.GetComponent<IDamagable>();
                 damagable?.DoDamage(_weaponData.DamageAmount);
             }
         }
+        public void OnFireStart()
+        {
+            if (_bulletsLeft == 0)
+            {
+                OnMagazineEmpty();
+                return;
+            }
+            if (!_canShoot) return;
+            _audioSource.loop = _weaponData.AllowButtonHold;
+            _readyToShoot = true;
+            _weaponFireCoroutine = StartCoroutine(OnFireCoroutine());
+        }
+        public void OnFireStop()
+        {
+            _audioSource.Stop();
+            if (_weaponFireCoroutine != null)
+                StopCoroutine(_weaponFireCoroutine);
+            _weaponFireCoroutine = null;
+        }
         public void ReloadWeapon()
         {
-
+            _reloading = true;
+            this.DoActionWithDelay(() =>
+            {
+                _bulletsLeft += _weaponData.MagazineSize;
+                _bulletCountText.text = _bulletsLeft.ToString();
+                _reloading = false;
+            }, _weaponData.ReloadTime);
         }
         private void OnMagazineEmpty()
         {
-            GameEvents.NotifyOnWeaponBulletsRequested();
+            OnFireStop();
         }
 
         public void OnPickItem(Player player)
         {
-            GameEvents.OnWeaponFireTriggered += OnFire;
-            Debug.Log("OnPickItem");
+            // Depending upon the gun type subscribe shooting mode
+            GameEvents.OnWeaponFireTriggered += OnFireStart;
+            GameEvents.OnWeaponFireStopped += OnFireStop;
+
             player.PlayerWeaponController?.AttachWeapon(this);
             _rb.isKinematic = true;
             this.ToggleCollidersArrayAtDelay(_colliders, false);
@@ -54,7 +113,10 @@ namespace Autovrse
 
         public void OnDropItem(Player player)
         {
-            GameEvents.OnWeaponFireTriggered -= OnFire;
+            // unsubscribe shooting mode on drop
+            GameEvents.OnWeaponFireTriggered -= OnFireStart;
+            GameEvents.OnWeaponFireStopped -= OnFireStop;
+
             player.PlayerWeaponController?.DetachWeapon(this);
 
             // Add force to show item dropping from inventory
@@ -74,7 +136,15 @@ namespace Autovrse
             transform.SetParent(_originalParent);
         }
 
+        internal void DisableWeapon()
+        {
+            _canShoot = false;
+        }
 
+        internal void EnableWeapon()
+        {
+            _canShoot = true;
+        }
     }
 
 }

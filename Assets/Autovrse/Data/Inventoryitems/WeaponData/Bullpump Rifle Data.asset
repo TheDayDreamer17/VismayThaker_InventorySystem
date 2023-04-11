@@ -12,15 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fffb2783b39787f4fa22593721ef095a, type: 3}
   m_Name: Bullpump Rifle Data
   m_EditorClassIdentifier: 
-  MagazineSize: 6
-  BulletPrefab: {fileID: 3447561424597023238, guid: 77ae85f7b28bec04f845db3a13d3da7a, type: 3}
+  MagazineSize: 30
+  BulletPrefab: {fileID: 3447561424597023238, guid: f626632866e6eb947aea36f44fd146de, type: 3}
   DropFrontForce: 3
   DropUpwardForce: 3
   DropTorqueForce: 100
   DamageAmount: 20
-  TimeBetweenShooting: 1
-  Spread: 0.1
+  TimeBetweenShooting: 0.15
   Range: 10
   ReloadTime: 1
-  TimeBetweenShots: 1
-  AllowButtonHold: 0
+  AllowButtonHold: 1

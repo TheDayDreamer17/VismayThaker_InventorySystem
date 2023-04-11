@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+// Main camera follows player in late update 
 public class CamFollowPlayer : MonoBehaviour
 {
     [SerializeField] private Transform _playerReference;

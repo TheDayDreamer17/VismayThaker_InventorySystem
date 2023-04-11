@@ -7,5 +7,6 @@ namespace Autovrse
     {
         public MeshRenderer[] MeshRenderers { get; }
         void OnUseItem(PlayerConsumableController playerConsumableController);
+        void OnItemShowCase();
     }
 }

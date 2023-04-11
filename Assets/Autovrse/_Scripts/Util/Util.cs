@@ -46,5 +46,30 @@ namespace Autovrse
             OnComplete?.Invoke();
             yield return null;
         }
+
+
+        static Coroutine DoRotationShowcaseCoroutineData;
+        public static void DoRotationShowcase(this MonoBehaviour monoBehaviour, Vector3 axis)
+        {
+
+            DoRotationShowcaseCoroutineData = monoBehaviour.StartCoroutine(DoRotationShowcaseCoroutine(monoBehaviour.transform, axis));
+        }
+
+        public static void StopRotationShowcase(this MonoBehaviour monoBehaviour)
+        {
+            if (DoRotationShowcaseCoroutineData != null)
+                monoBehaviour.StopCoroutine(DoRotationShowcaseCoroutineData);
+        }
+
+        private static IEnumerator DoRotationShowcaseCoroutine(Transform objectTransform, Vector3 axis)
+        {
+            float angle = 0;
+            while (true)
+            {
+                angle += 20;
+                objectTransform.RotateAround(objectTransform.position, axis, angle);
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
     }
 }

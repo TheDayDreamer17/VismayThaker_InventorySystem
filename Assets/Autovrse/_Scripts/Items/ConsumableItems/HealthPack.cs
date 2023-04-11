@@ -5,6 +5,19 @@ namespace Autovrse
 {
     public class HealthPack : ConsumableItem, IInventoryConsumableItem
     {
+        private void Start()
+        {
+            OnItemShowCase();
+        }
+        public void OnItemShowCase()
+        {
+            this.DoRotationShowcase(Vector3.up);
+        }
+        public override void OnPickItem(Player player)
+        {
+            base.OnPickItem(player);
+            this.StopRotationShowcase();
+        }
         public void OnUseItem(PlayerConsumableController playerConsumableController)
         {
             playerConsumableController.Player.ModifyHealth(100);
